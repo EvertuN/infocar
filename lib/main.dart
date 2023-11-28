@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:infocar/models/favoritos_carros.dart';
 import 'package:infocar/pages/carros.dart';
-//este é um projeto feito na materia de Programação Mobile I
+import 'package:infocar/pages/favoritos.dart';
+import 'package:infocar/pages/perfil.dart';
+import 'package:provider/provider.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: ((context) => FavoritosCarros()),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,16 +43,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  List<Widget> pages = [
+  List<Widget> pages = const [
+    // Substituir pelas páginas do app (o widget correspondente)
     PageCar(),
-    Text(
-      "favoritos",
-      style: TextStyle(fontSize: 48),
-    ),
-    Text(
-      "perfil",
-      style: TextStyle(fontSize: 48),
-    ),
+    PageFavoritos(),
+    PagePerfil(),
   ];
 
   void _changeIndex(int value) {
@@ -71,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
+            icon: Icon(Icons.directions_car_outlined),
             label: 'Carros',
           ),
           BottomNavigationBarItem(
@@ -79,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Favoritos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outlined),
+            icon: Icon(Icons.person_outline),
             label: 'Perfil',
           ),
         ],
