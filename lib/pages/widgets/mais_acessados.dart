@@ -18,7 +18,7 @@ class _MaisAcessadosState extends State<MaisAcessados> {
         child: Column(
           children: [
             Image.asset(
-              "assets/acura_logo.png",
+              "assets/acura.png",
               width: 48,
             ),
             Text("INTEGRA"),
