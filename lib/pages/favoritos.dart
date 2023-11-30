@@ -18,7 +18,6 @@ class _PageFavoritosState extends State<PageFavoritos> {
   @override
   void initState() {
     super.initState();
-    // Inicie a solicitação quando o widget for iniciado
     futureBrands = fetchData();
   }
 
@@ -39,7 +38,6 @@ class _PageFavoritosState extends State<PageFavoritos> {
         title: Text('Página de Favoritos'),
       ),
       body: Center(
-        // Use FutureBuilder para lidar com o estado futuro dos dados
         child: FutureBuilder<List<Map<String, dynamic>>>(
           future: futureBrands,
           builder: (context, snapshot) {
@@ -48,7 +46,6 @@ class _PageFavoritosState extends State<PageFavoritos> {
             } else if (snapshot.hasError) {
               return Text('Erro: ${snapshot.error}');
             } else {
-              // Se os dados foram carregados com sucesso, mostre-os na tela
               final brands = snapshot.data!;
 
               return ListView.builder(
@@ -57,7 +54,6 @@ class _PageFavoritosState extends State<PageFavoritos> {
                   final brand = brands[index];
                   return ListTile(
                     title: Text(brand['name'].toString()),
-                    // Adicione mais widgets para mostrar outros detalhes do item
                   );
                 },
               );

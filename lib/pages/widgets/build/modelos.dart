@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:infocar/pages/widgets/build/modelo_ano.dart';
 
 class ModelosPage extends StatefulWidget {
   final String brandCode;
   final String brandName;
 
-  const ModelosPage({required this.brandCode, required this.brandName, Key? key}) : super(key: key);
+  const ModelosPage(
+      {required this.brandCode, required this.brandName, Key? key})
+      : super(key: key);
 
   @override
   State<ModelosPage> createState() => _ModelosPageState();
@@ -22,15 +25,23 @@ class _ModelosPageState extends State<ModelosPage> {
   }
 
   Future<List<Map<String, dynamic>>> fetchModels() async {
-    final response = await http.get(
-        Uri.parse('https://parallelum.com.br/fipe/api/v2/cars/brands/${widget.brandCode}/models'));
+  try {
+    final response = await http.get(Uri.parse(
+        'https://parallelum.com.br/fipe/api/v2/cars/brands/${widget.brandCode}/models'));
 
     if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(json.decode(response.body));
+      final models = List<Map<String, dynamic>>.from(json.decode(response.body));
+
+      return models;
     } else {
-      throw Exception('Erro: ${response.statusCode}');
+      throw Exception(
+          'Erro ao buscar os modelos. Código de status: ${response.statusCode}');
     }
+  } catch (e) {
+    throw Exception('Erro durante a solicitação HTTP: $e');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +60,7 @@ class _ModelosPageState extends State<ModelosPage> {
                 return CircularProgressIndicator();
               } else {
                 final models = snapshot.data!;
-      
+
                 return ListView.builder(
                   itemCount: models.length * 2 - 1,
                   itemBuilder: (context, index) {
@@ -58,13 +69,30 @@ class _ModelosPageState extends State<ModelosPage> {
                     } else {
                       final modelIndex = index ~/ 2;
                       final model = models[modelIndex];
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 200, 200, 200),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: ListTile(
-                          title: Text(model['name'].toString()),
+                      return InkWell(
+                        onTap: () async {
+                          final modelId = model['code'];
+                          if (modelId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AnosPage(
+                                  brandId: widget.brandCode,
+                                  modelId: modelId.toString(),
+                                  modelName: model['name'].toString(),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 200, 200, 200),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: ListTile(
+                            title: Text(model['name'].toString()),
+                          ),
                         ),
                       );
                     }
