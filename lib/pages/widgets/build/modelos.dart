@@ -7,8 +7,7 @@ class ModelosPage extends StatefulWidget {
   final String brandCode;
   final String brandName;
 
-  const ModelosPage(
-      {required this.brandCode, required this.brandName, Key? key})
+  const ModelosPage({required this.brandCode, required this.brandName, Key? key})
       : super(key: key);
 
   @override
@@ -25,29 +24,28 @@ class _ModelosPageState extends State<ModelosPage> {
   }
 
   Future<List<Map<String, dynamic>>> fetchModels() async {
-  try {
-    final response = await http.get(Uri.parse(
-        'https://parallelum.com.br/fipe/api/v2/cars/brands/${widget.brandCode}/models'));
+    try {
+      final response = await http.get(Uri.parse(
+          'https://parallelum.com.br/fipe/api/v2/cars/brands/${widget.brandCode}/models'));
 
-    if (response.statusCode == 200) {
-      final models = List<Map<String, dynamic>>.from(json.decode(response.body));
+      if (response.statusCode == 200) {
+        final models = List<Map<String, dynamic>>.from(json.decode(response.body));
 
-      return models;
-    } else {
-      throw Exception(
-          'Erro ao buscar os modelos. Código de status: ${response.statusCode}');
+        return models;
+      } else {
+        throw Exception(
+            'Erro ao buscar os modelos. Código de status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erro durante a solicitação HTTP: $e');
     }
-  } catch (e) {
-    throw Exception('Erro durante a solicitação HTTP: $e');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.brandName),
+        title: Text(widget.brandName), foregroundColor: Colors.black,
         backgroundColor: Color.fromRGBO(234, 234, 234, 1),
       ),
       body: Padding(

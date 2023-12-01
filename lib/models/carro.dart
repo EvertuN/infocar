@@ -1,5 +1,5 @@
 class Carro {
-  String modelo;
+  final String modelo;
   String marca;
   double valor;
   String descricao;

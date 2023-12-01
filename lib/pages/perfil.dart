@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:infocar/models/carro.dart';
 import 'package:infocar/models/favoritos_carros.dart';
+import 'package:infocar/pages/favoritos.dart';
 import 'package:provider/provider.dart';
 
 class PagePerfil extends StatefulWidget {
@@ -22,7 +23,6 @@ class _PagePerfilState extends State<PagePerfil> {
           descricao: "Onix Hatch 2023",
           imgUrl: "12345",
         );
-        Provider.of<FavoritosCarros>(context, listen: false).add(carro);
       },
       child: Text(
         "Inserir carro",

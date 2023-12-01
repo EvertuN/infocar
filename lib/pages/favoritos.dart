@@ -1,65 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:infocar/models/favoritos_carros.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
-class PageFavoritos extends StatefulWidget {
-  const PageFavoritos({Key? key}) : super(key: key);
-
-  @override
-  State<PageFavoritos> createState() => _PageFavoritosState();
-}
-
-class _PageFavoritosState extends State<PageFavoritos> {
-  late Future<List<Map<String, dynamic>>> futureBrands;
-
-  @override
-  void initState() {
-    super.initState();
-    futureBrands = fetchData();
-  }
-
-  Future<List<Map<String, dynamic>>> fetchData() async {
-    final response = await http.get(Uri.parse('https://parallelum.com.br/fipe/api/v2/cars/brands'));
-
-    if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load data. Status code: ${response.statusCode}');
-    }
-  }
-
+class Favoritos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Página de Favoritos'),
+        title: Text('Favoritos'), foregroundColor: Colors.black,
+        backgroundColor: Color.fromRGBO(234, 234, 234, 1),
       ),
-      body: Center(
-        child: FutureBuilder<List<Map<String, dynamic>>>(
-          future: futureBrands,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Erro: ${snapshot.error}');
-            } else {
-              final brands = snapshot.data!;
-
-              return ListView.builder(
-                itemCount: brands.length,
-                itemBuilder: (context, index) {
-                  final brand = brands[index];
-                  return ListTile(
-                    title: Text(brand['name'].toString()),
-                  );
-                },
+      body: Consumer<FavoritosCarros>(
+        builder: (context, favoritosCarros, child) {
+          return ListView.builder(
+            itemCount: favoritosCarros.favoritos.length,
+            itemBuilder: (context, index) {
+              final modelo = favoritosCarros.favoritos[index];
+              return ListTile(
+                title: Text(modelo),
+                trailing: IconButton(
+                  icon: Icon(Icons.favorite, color: Colors.red),
+                  onPressed: () {
+                    favoritosCarros.removerFavorito(modelo);
+                  },
+                ),
               );
-            }
-          },
-        ),
+            },
+          );
+        },
       ),
     );
   }

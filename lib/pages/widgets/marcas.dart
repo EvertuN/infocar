@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:infocar/pages/widgets/build/marca_pagina.dart';
+import 'package:infocar/pages/widgets/build/modelos.dart';
 import 'package:infocar/pages/widgets/build/ver_todos.dart';
 
 class Marcas extends StatefulWidget {
@@ -22,26 +22,31 @@ class _MarcasState extends State<Marcas> {
   }
 
   Future<void> fetchMarcas() async {
-      final response = await http.get(Uri.parse('https://parallelum.com.br/fipe/api/v2/cars/brands'));
+    final response = await http
+        .get(Uri.parse('https://parallelum.com.br/fipe/api/v2/cars/brands'));
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        List<String> marcasList = List<String>.from(data.map((marca) => marca['name'].toString()));
-        marcasList.sort();
-        setState(() {
-          marcas = marcasList.take(8).toList();
-        });
-      }
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      List<String> marcasList =
+          List<String>.from(data.map((marca) => marca['name'].toString()));
+      marcasList.sort();
+      setState(() {
+        marcas = marcasList.take(8).toList();
+      });
+    }
   }
 
   Widget buildMarcaItem(String titulo, BuildContext context) => Tooltip(
         message: titulo,
         child: InkWell(
-          onTap: () {
+          onTap: () async {
+            final brandCode =
+                await obterCodigoMarca(titulo); // Adicione essa linha
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DetalhesMarca(nomeMarca: titulo),
+                builder: (context) =>
+                    ModelosPage(brandName: titulo, brandCode: brandCode),
               ),
             );
           },
@@ -85,7 +90,26 @@ class _MarcasState extends State<Marcas> {
         ),
       );
 
-    @override
+// Função para obter o código da marca
+  Future<String> obterCodigoMarca(String marca) async {
+    final response = await http
+        .get(Uri.parse('https://parallelum.com.br/fipe/api/v2/cars/brands'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      final marcaEncontrada = data.firstWhere(
+          (element) => element['name'] == marca,
+          orElse: () => null);
+
+      if (marcaEncontrada != null) {
+        return marcaEncontrada['code'].toString();
+      }
+    }
+
+    return ''; // Retorne um valor padrão ou lide com o erro conforme necessário
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -134,7 +158,9 @@ class _MarcasState extends State<Marcas> {
               crossAxisSpacing: 8,
               mainAxisSpacing: 10,
               shrinkWrap: true,
-              children: marcas.map((marca) => buildMarcaItem(marca, context)).toList(),
+              children: marcas
+                  .map((marca) => buildMarcaItem(marca, context))
+                  .toList(),
             ),
           ],
         ),

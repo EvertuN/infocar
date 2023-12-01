@@ -7,24 +7,26 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: ((context) => FavoritosCarros()),
+    ChangeNotifierProvider<FavoritosCarros>(
+      create: (context) => FavoritosCarros(),
       child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'InfoCar App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.deepPurple,
+        ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const MyHomePage(title: 'InfoCar App'),
     );
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -42,11 +44,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  List<Widget> pages = const [
-    PageCar(),
-    PageFavoritos(),
-    PagePerfil(),
-  ];
 
   void _changeIndex(int value) {
     setState(() {
@@ -58,9 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(234, 234, 234, 1),
+        backgroundColor: Color.fromRGBO(234, 234, 234, 1),
         leading: const Icon(Icons.menu),
-        title: Text(widget.title),
+        title: Text(widget.title), foregroundColor: Colors.black,
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 10),
@@ -69,7 +66,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: pages.elementAt(_selectedIndex),
+        child: _selectedIndex == 0
+            ? PageCar()
+            : _selectedIndex == 1
+                ? Favoritos()
+                : PagePerfil(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [

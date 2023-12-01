@@ -36,7 +36,8 @@ class _AnosPageState extends State<AnosPage> {
       if (response.statusCode == 200) {
         return List<Map<String, dynamic>>.from(json.decode(response.body));
       } else {
-        throw Exception('Erro ao buscar os anos. Código de status: ${response.statusCode}');
+        throw Exception(
+            'Erro ao buscar os anos. Código de status: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Erro durante a solicitação HTTP: $e');
@@ -44,14 +45,32 @@ class _AnosPageState extends State<AnosPage> {
   }
 
   Future<String> getYearId(String yearCode) async {
-    final response = await http.get(Uri.parse(
-        'https://parallelum.com.br/fipe/api/v2/cars/brands/${widget.brandId}/models/${widget.modelId}/years/$yearCode'));
+    try {
+      final response = await http.get(Uri.parse(
+          'https://parallelum.com.br/fipe/api/v2/cars/brands/${widget.brandId}/models/${widget.modelId}/years/$yearCode'));
 
-    if (response.statusCode == 200) {
-      final yearId = json.decode(response.body)['code'];
-      return yearId.toString();
-    } else {
-      throw Exception('Erro ao obter o yearId. Código de status: ${response.statusCode}');
+      //print('Resposta para getYearId: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData.containsKey('codeFipe') &&
+            responseData['codeFipe'] != null) {
+          final yearId = responseData['codeFipe'];
+          //print('Valor de yearId após a chamada: $yearId');
+          return yearId.toString();
+        } else {
+          //print('A resposta não contém a chave "codeFipe" ou o valor é nulo.');
+          throw Exception('Erro ao obter o yearId. Resposta inválida.');
+        }
+      } else {
+        //print('Erro na resposta da API: ${response.body}');
+        throw Exception(
+            'Erro ao obter o yearId. Código de status: ${response.statusCode}');
+      }
+    } catch (e) {
+      //print('Erro durante a requisição: $e');
+      throw Exception('Erro ao obter yearId: $e');
     }
   }
 
@@ -60,7 +79,7 @@ class _AnosPageState extends State<AnosPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Anos para ${widget.modelName}'),
-        backgroundColor: Colors.green,
+        backgroundColor: Color.fromRGBO(234, 234, 234, 1), foregroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -83,28 +102,29 @@ class _AnosPageState extends State<AnosPage> {
                       final year = years[yearIndex];
                       return InkWell(
                         onTap: () async {
-                          final yearId =
-                              await getYearId(year['code'].toString());
-                          // ignore: use_build_context_synchronously
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetalhesModeloPage(
-                                brandId: widget.brandId,
-                                modelId: widget.modelId,
-                                yearId: yearId,
-                                modelName: widget.modelName,
+                          final yearCode = year['code'].toString();
+                          if (yearCode.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetalhesModeloPage(
+                                  brandId: widget.brandId,
+                                  modelId: widget.modelId,
+                                  yearId:
+                                      yearCode,
+                                  modelName: widget.modelName,
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: Color.fromARGB(255, 200, 200, 200),
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: ListTile(
-                            title: Text(year['name'].toString()),
+                            title: Text(year['code'].toString()),
                           ),
                         ),
                       );

@@ -34,7 +34,7 @@ class _PageVerTodos extends State<VerTodos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Marcas'),
+        title: Text('Marcas'), foregroundColor: Colors.black,
         backgroundColor: Color.fromRGBO(234, 234, 234, 1),
       ),
       body: Container(
